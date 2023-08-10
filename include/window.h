@@ -2,7 +2,11 @@
 #include <wx/wx.h>
 #include <wx/spinctrl.h>
 #include <wx/listbox.h>
+#include <wx/hyperlink.h>
 #include <fstream>
+#include <wx/icon.h>
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
 
 struct CommandBase {
 	int frame;
@@ -100,7 +104,7 @@ enum TextIDS {
 	Text_Param5Desc,
 	Text_Param6Desc,
 	Text_Param7Desc,
-	
+	Text_About,
 };
 
 WindowFrame::WindowFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxSize(768, 432), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX)) {
@@ -117,7 +121,9 @@ WindowFrame::WindowFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, tit
 
 	// window stuff
 	panel = new wxPanel(this);
-
+	wxFileName* fileName = new wxFileName(wxStandardPaths::Get().GetExecutablePath());
+	wxString imagePath = fileName->GetPath() + "\\res\\icon.png";
+	SetIcon(wxIcon(imagePath, wxBITMAP_TYPE_PNG, 256, 256));
 	// gui
 	commandStrings = new wxArrayString;
 	
@@ -125,20 +131,27 @@ WindowFrame::WindowFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, tit
 	commandList->Bind(wxEVT_LISTBOX, &WindowFrame::GetCommandListSelection, this);
 
 	commandCounter = new wxStaticText(panel, Text_CommandCount, "Command Count will go here.", commandList->GetPosition() + wxPoint(0, 402));
+
+	
 	openFileButton = new wxButton(panel, wxID_ANY, "Open File", wxPoint(10, 10), wxSize(100, 50));
 	openFileButton->Bind(wxEVT_BUTTON, &WindowFrame::OpenFile, this);
+	openFileButton->SetToolTip(new wxToolTip("Open a file."));
 
 	saveFileButton = new wxButton(panel, wxID_ANY, "Save File", wxPoint(120, 10), wxSize(100, 50));
 	saveFileButton->Bind(wxEVT_BUTTON, &WindowFrame::SaveFile, this);
+	saveFileButton->SetToolTip(new wxToolTip("Save a file."));
 
 	addCommandButton = new wxButton(panel, wxID_ANY, "Add at end", wxPoint(10, 70), wxSize(100, 35));
 	addCommandButton->Bind(wxEVT_BUTTON, &WindowFrame::AddCommand, this);
+	addCommandButton->SetToolTip(new wxToolTip("Add command to the end of the list of commands."));
 
-	removeCommandButton = new wxButton(panel, wxID_ANY, "Remove selected", addCommandButton->GetPosition() + wxPoint(110, 0), wxSize(100, 35));
-	removeCommandButton->Bind(wxEVT_BUTTON, &WindowFrame::RemoveCommand, this);
-
-	insertCommandButton = new wxButton(panel, wxID_ANY, "Add at selected", removeCommandButton->GetPosition() + wxPoint(110, 0), wxSize(100, 35));
+	insertCommandButton = new wxButton(panel, wxID_ANY, "Add at selected", addCommandButton->GetPosition() + wxPoint(110, 0), wxSize(100, 35));
 	insertCommandButton->Bind(wxEVT_BUTTON, &WindowFrame::InsertCommand, this);
+	insertCommandButton->SetToolTip(new wxToolTip("Insert command to the list of commands."));
+
+	removeCommandButton = new wxButton(panel, wxID_ANY, "Remove selected", insertCommandButton->GetPosition() + wxPoint(110, 0), wxSize(100, 35));
+	removeCommandButton->Bind(wxEVT_BUTTON, &WindowFrame::RemoveCommand, this);
+	removeCommandButton->SetToolTip(new wxToolTip("Remove command from the list of commands."));
 
 	wxStaticText* commandInfoText = new wxStaticText(panel, Text_Info, "Command Info", wxPoint(10, 120));
 	wxFont font = commandInfoText->GetFont();
@@ -197,5 +210,10 @@ WindowFrame::WindowFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, tit
 	param7->Bind(wxEVT_SPINCTRL, &WindowFrame::SetParam7Value, this);
 
 	
+	// about
+	wxString* aboutStr = new wxString("Moviedata Editor - v1.0\nSwiftshine 2023");
+	wxStaticText* aboutText = new wxStaticText(panel, Text_About, *aboutStr, saveFileButton->GetPosition() + wxPoint(110, 5));
+	wxHyperlinkCtrl* hyperlink = new wxHyperlinkCtrl(panel, wxID_ANY, "Moviedata Editor on GitHub", "https://github.com/Swiftshine/Moviedata-Editor", aboutText->GetPosition() + wxPoint(0, 30));
+	hyperlink->SetToolTip(new wxToolTip("Click me! :3"));
 	CreateStatusBar();
 }
