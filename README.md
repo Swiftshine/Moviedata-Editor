@@ -2,8 +2,8 @@
 A tool to edit moveiedata and moviesound files in New Super Mario bros. Wii.
 
 ## Special Thanks
-- CLF78 for his documentation
-- LiQ for programming assistance
+- [CLF78](https://github.com/CLF78) for his documentation
+- [LiQ](https://github.com/realLiQ) for programming assistance
 - App icon designed by [Freepik](https://www.freepik.com/icon/birthday-cake_3159518#fromView=keyword&term=Birthday+Cake&page=1&position=7)
 
 ## Compiling
